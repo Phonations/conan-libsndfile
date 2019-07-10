@@ -10,6 +10,7 @@ class LibsndfileConan(ConanFile):
     url = "https://github.com/Phonations/conan-libsndfile"
     homepage = "http://www.mega-nerd.com/libsndfile"
     description = "A C library for reading and writing sound files containing sampled audio data."
+    exports = "LICENSE"
     topics = ("audio", "sound", "wav", "aiff", "sampled-sound")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
