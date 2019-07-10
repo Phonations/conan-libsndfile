@@ -1,5 +1,6 @@
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, AutoToolsBuildEnvironment, tools
 import sys
+import shutil
 
 
 class LibsndfileConan(ConanFile):
@@ -27,23 +28,19 @@ class LibsndfileConan(ConanFile):
         shutil.move("libsndfile-%s" % self.version, "libsndfile")
 
     def build(self):
-        cmake = CMake(self)
-        cmake.configure(source_folder="hello")
-        cmake.build()
-
-        # Explicit way:
-        # self.run('cmake %s/hello %s'
-        #          % (self.source_folder, cmake.command_line))
-        # self.run("cmake --build . %s" % cmake.build_config)
+        with tools.chdir("libsndfile"):
+            autotools = AutoToolsBuildEnvironment(self)
+            autotools.configure()
+            autotools.make()
 
     def package(self):
-        self.copy("*.h", dst="include", src="hello")
-        self.copy("*hello.lib", dst="lib", keep_path=False)
+        self.copy("sndfile.h", dst="include", src="libsndfile/src")
+        self.copy("sndfile.hh", dst="include", src="libsndfile/src")
         self.copy("*.dll", dst="bin", keep_path=False)
         self.copy("*.so", dst="lib", keep_path=False)
         self.copy("*.dylib", dst="lib", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["hello"]
+        self.cpp_info.libs = ["sndfile"]
 
