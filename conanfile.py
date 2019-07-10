@@ -31,12 +31,11 @@ class LibsndfileConan(ConanFile):
             del self.settings.compiler
 
     def source(self):
-        if self.settings.os != "Windows":
-            source_sha256 = "1ff33929f042fa333aed1e8923aa628c3ee9e1eb85512686c55092d1e5a9dfa9"
-            extracted_folder = self.name + '-' + self.version
-            url = "{}/files/{}".format(self.homepage, extracted_folder)
-            tools.get("{}.tar.gz".format(url), sha256=source_sha256)
-            os.rename(extracted_folder, self._source_subfolder)
+        source_sha256 = "1ff33929f042fa333aed1e8923aa628c3ee9e1eb85512686c55092d1e5a9dfa9"
+        extracted_folder = self.name + '-' + self.version
+        url = "{}/files/{}".format(self.homepage, extracted_folder)
+        tools.get("{}.tar.gz".format(url), sha256=source_sha256)
+        os.rename(extracted_folder, self._source_subfolder)
 
     def _configure_autotools(self):
         if not self._autotools:
@@ -66,13 +65,13 @@ class LibsndfileConan(ConanFile):
             autotools.make()
 
     def package(self):
+        self.copy("COPYING", dst="licenses", src=self._source_subfolder)
         if self.settings.os == "Windows":
             self.copy("*.dll", dst="bin", src="bin")
             self.copy("*.lib", dst="lib", src="lib")
             self.copy("*.h", dst="include", src="include")
             self.copy("*.hh", dst="include", src="include")
         else:
-            self.copy("COPYING", dst="licenses", src=self._source_subfolder)
             autotools = self._configure_autotools()
             autotools.install()
             tools.rmdir(os.path.join(self.package_folder, "share"))
